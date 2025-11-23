@@ -341,22 +341,18 @@ style.configure('Title.TLabel', background="#f5f6fa", font=("Segoe UI", 18, "bol
 style.configure('Modern.TButton', font=("Segoe UI", 10), padding=10)
 style.configure('Accent.TButton', font=("Segoe UI", 11, "bold"), padding=12)
 
-# Container principal
 main_container = ttk.Frame(root, style='Modern.TFrame')
 main_container.pack(fill="both", expand=True, padx=20, pady=20)
 
-# Titlu
 title_label = ttk.Label(main_container, text="🌐 Traducător Multilingual", style='Title.TLabel')
 title_label.pack(pady=(0, 20))
 
-# Card pentru selecție limbi
 lang_card = ttk.Frame(main_container, style='Card.TFrame', relief="solid", borderwidth=1)
 lang_card.pack(fill="x", pady=(0, 15), ipady=15, ipadx=15)
 
 lang_frame = ttk.Frame(lang_card, style='Card.TFrame')
 lang_frame.pack(fill="x", padx=10, pady=5)
 
-# Limbă sursă
 source_frame = ttk.Frame(lang_frame, style='Card.TFrame')
 source_frame.pack(side="left", expand=True, fill="x", padx=5)
 
@@ -368,11 +364,9 @@ source_combo = ttk.Combobox(source_frame, textvariable=source_var,
                             state="readonly", width=25, font=("Segoe UI", 10))
 source_combo.pack(fill="x")
 
-# Buton swap
 swap_button = ttk.Button(lang_frame, text="⇄", command=swap_languages, width=3)
 swap_button.pack(side="left", padx=10, pady=15)
 
-# Limbă destinație
 target_frame = ttk.Frame(lang_frame, style='Card.TFrame')
 target_frame.pack(side="left", expand=True, fill="x", padx=5)
 
@@ -383,17 +377,14 @@ target_combo = ttk.Combobox(target_frame, textvariable=target_var,
                             state="readonly", width=25, font=("Segoe UI", 10))
 target_combo.pack(fill="x")
 
-# Label pentru limba detectată
 detected_label = ttk.Label(main_container, text="", font=("Segoe UI", 9),
                            foreground="#3498db", background="#f5f6fa")
 detected_label.pack(pady=(0, 5))
 
-# Label pentru status PDF
 pdf_status_label = ttk.Label(main_container, text="", font=("Segoe UI", 9),
                              foreground="#27ae60", background="#f5f6fa")
 pdf_status_label.pack(pady=(0, 10))
 
-# Side by side pentru text
 side_by_side = ttk.Frame(main_container, style='Modern.TFrame')
 side_by_side.pack(fill="both", expand=True, pady=(0, 10))
 
@@ -401,7 +392,6 @@ side_by_side.columnconfigure(0, weight=1)
 side_by_side.columnconfigure(1, weight=1)
 side_by_side.rowconfigure(0, weight=1)
 
-# Card input
 input_card = ttk.Frame(side_by_side, style='Card.TFrame', relief="solid", borderwidth=1)
 input_card.grid(row=0, column=0, sticky="nsew", padx=(0, 7), pady=0)
 
@@ -415,7 +405,6 @@ text_input.pack(fill="both", expand=True, padx=15, pady=(0, 10))
 text_input.bind("<KeyRelease>", adjust_heights)
 text_input.focus()
 
-# Card rezultat
 result_card = ttk.Frame(side_by_side, style='Card.TFrame', relief="solid", borderwidth=1)
 result_card.grid(row=0, column=1, sticky="nsew", padx=(7, 0), pady=0)
 
@@ -427,11 +416,9 @@ result_text = tk.Text(result_card, height=1, font=("Segoe UI", 11), wrap=tk.WORD
                       padx=10, pady=10, state="disabled")
 result_text.pack(fill="both", expand=True, padx=15, pady=(0, 10))
 
-# Frame pentru butoane
 button_frame = ttk.Frame(main_container, style='Modern.TFrame')
 button_frame.pack(pady=10)
 
-# Butoane cu design modern
 pdf_button = tk.Button(button_frame, text="📄 Încarcă PDF", command=load_pdf,
                        font=("Segoe UI", 11, "bold"), bg="#00d2d3", fg="white",
                        relief="flat", padx=20, pady=12, cursor="hand2",
@@ -456,7 +443,6 @@ download_button = tk.Button(button_frame, text="💾 Descarcă PDF", command=dow
                             activebackground="#00a8a9", state="disabled")
 download_button.pack(side="left", padx=5)
 
-# Bind Ctrl+Enter pentru traducere rapidă
 text_input.bind("<Control-Return>", translate_text)
 
 adjust_heights()
