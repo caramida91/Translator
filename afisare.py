@@ -1,7 +1,10 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog, messagebox
 from deep_translator import GoogleTranslator
 from langdetect import detect, DetectorFactory
+import PyPDF2
+from fpdf import FPDF
+import os
 
 # Setează seed pentru rezultate consistente
 DetectorFactory.seed = 0
@@ -118,6 +121,9 @@ LANGUAGES = {
 # Dicționar invers pentru conversie cod -> nume
 CODE_TO_NAME = {v: k for k, v in LANGUAGES.items()}
 
+# Variabilă globală pentru calea PDF-ului încărcat
+current_pdf_path = None
+
 
 def detect_language(text):
     """Detectează limba textului folosind langdetect"""
@@ -125,7 +131,6 @@ def detect_language(text):
         if len(text.strip()) < 3:
             return None
         detected_code = detect(text)
-        # Convertește codurile speciale
         if detected_code == 'zh-cn':
             detected_code = 'zh-CN'
         elif detected_code == 'zh-tw':
@@ -138,23 +143,113 @@ def detect_language(text):
 
 
 def adjust_heights(event=None):
-    """Ajustează înălțimea ambelor câmpuri de text (input și rezultat) sincronizat, între 1 și 10 linii"""
-    # Obține numărul de linii din fiecare widget
+    """Ajustează înălțimea ambelor câmpuri de text sincronizat"""
     input_lines = text_input.get("1.0", "end-1c").count('\n') + 1
     result_lines = result_text.get("1.0", "end-1c").count('\n') + 1
     lines = max(input_lines, result_lines)
-    lines = min(max(lines, 1), 10)  # clamp între 1 și 10
+    lines = min(max(lines, 1), 10)
     text_input.config(height=lines)
     result_text.config(height=lines)
-    # Force UI update
     text_input.update_idletasks()
     result_text.update_idletasks()
+
+
+def extract_text_from_pdf(pdf_path):
+    """Extrage textul din PDF"""
+    try:
+        text = ""
+        with open(pdf_path, 'rb') as file:
+            pdf_reader = PyPDF2.PdfReader(file)
+            for page in pdf_reader.pages:
+                text += page.extract_text() + "\n"
+        return text.strip()
+    except Exception as e:
+        messagebox.showerror("Eroare PDF", f"Nu s-a putut citi PDF-ul:\n{str(e)}")
+        return None
+
+
+def load_pdf():
+    """Încarcă un PDF și extrage textul"""
+    global current_pdf_path
+    file_path = filedialog.askopenfilename(
+        title="Selectează un fișier PDF",
+        filetypes=[("PDF files", "*.pdf"), ("All files", "*.*")]
+    )
+
+    if file_path:
+        current_pdf_path = file_path
+        text = extract_text_from_pdf(file_path)
+
+        if text:
+            text_input.delete("1.0", tk.END)
+            text_input.insert("1.0", text)
+            pdf_status_label.config(text=f"📄 Încărcat: {os.path.basename(file_path)}")
+            adjust_heights()
+            # Activează butonul de download
+            download_button.config(state="normal")
+        else:
+            pdf_status_label.config(text="❌ Eroare la încărcarea PDF-ului")
+
+
+def create_pdf(text, output_path):
+    """Creează un PDF cu textul tradus"""
+    try:
+        pdf = FPDF()
+        pdf.add_page()
+
+        # Adaugă font care suportă UTF-8
+        pdf.add_font('DejaVu', '', 'DejaVuSans.ttf', uni=True)
+        pdf.set_font('DejaVu', '', 12)
+
+        # Încearcă să folosească DejaVu, dacă nu merge folosește Arial
+        try:
+            pdf.set_font('DejaVu', '', 12)
+        except:
+            pdf.set_font('Arial', '', 12)
+
+        # Adaugă text cu word wrap
+        pdf.multi_cell(0, 10, text)
+        pdf.output(output_path)
+        return True
+    except Exception as e:
+        # Dacă nu merge cu fontul personalizat, încearcă cu metoda simplă
+        try:
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font('Arial', '', 12)
+            # Encodează textul pentru a evita probleme
+            safe_text = text.encode('latin-1', 'replace').decode('latin-1')
+            pdf.multi_cell(0, 10, safe_text)
+            pdf.output(output_path)
+            return True
+        except Exception as e2:
+            messagebox.showerror("Eroare PDF", f"Nu s-a putut crea PDF-ul:\n{str(e2)}")
+            return False
+
+
+def download_pdf():
+    """Salvează traducerea ca PDF"""
+    result = result_text.get("1.0", "end-1c").strip()
+
+    if not result or result.startswith("⚠️") or result.startswith("❌"):
+        messagebox.showwarning("Atenție", "Nu există text tradus de salvat!")
+        return
+
+    file_path = filedialog.asksaveasfilename(
+        title="Salvează PDF-ul tradus",
+        defaultextension=".pdf",
+        filetypes=[("PDF files", "*.pdf"), ("All files", "*.*")]
+    )
+
+    if file_path:
+        if create_pdf(result, file_path):
+            messagebox.showinfo("Succes", f"PDF salvat cu succes:\n{os.path.basename(file_path)}")
+            pdf_status_label.config(text=f"💾 Salvat: {os.path.basename(file_path)}")
 
 
 def translate_text(event=None):
     text = text_input.get("1.0", "end-1c").strip()
     if not text:
-        # enable to update, then disable again
         result_text.config(state="normal")
         result_text.delete("1.0", tk.END)
         result_text.insert("1.0", "⚠️ Scrie ceva mai întâi.")
@@ -182,8 +277,10 @@ def translate_text(event=None):
         target_lang = LANGUAGES[target_name]
 
         if source_lang == target_lang:
+            result_text.config(state="normal")
             result_text.delete("1.0", tk.END)
             result_text.insert("1.0", "⚠️ Limbile sursă și destinație sunt identice.")
+            result_text.config(state="disabled")
             adjust_heights()
             return
 
@@ -193,6 +290,9 @@ def translate_text(event=None):
         result_text.insert("1.0", translation)
         result_text.config(state="disabled")
         adjust_heights()
+
+        # Activează butonul de download după traducere
+        download_button.config(state="normal")
 
     except Exception as e:
         result_text.config(state="normal")
@@ -212,23 +312,26 @@ def swap_languages():
 
 
 def clear_all():
-
+    global current_pdf_path
+    current_pdf_path = None
     text_input.delete("1.0", tk.END)
     result_text.config(state="normal")
     result_text.delete("1.0", tk.END)
     result_text.config(state="disabled")
     detected_label.config(text="")
+    pdf_status_label.config(text="")
+    download_button.config(state="disabled")
     adjust_heights()
 
 
-
+# Creare fereastră principală
 root = tk.Tk()
 root.title("Traducător Multilingual")
 root.geometry("700x500")
 root.resizable(True, True)
 root.configure(bg="#f5f6fa")
 
-
+# Stiluri
 style = ttk.Style()
 style.theme_use('clam')
 style.configure('Modern.TFrame', background="#f5f6fa")
@@ -238,34 +341,38 @@ style.configure('Title.TLabel', background="#f5f6fa", font=("Segoe UI", 18, "bol
 style.configure('Modern.TButton', font=("Segoe UI", 10), padding=10)
 style.configure('Accent.TButton', font=("Segoe UI", 11, "bold"), padding=12)
 
+# Container principal
 main_container = ttk.Frame(root, style='Modern.TFrame')
 main_container.pack(fill="both", expand=True, padx=20, pady=20)
 
-
+# Titlu
 title_label = ttk.Label(main_container, text="🌐 Traducător Multilingual", style='Title.TLabel')
 title_label.pack(pady=(0, 20))
 
+# Card pentru selecție limbi
 lang_card = ttk.Frame(main_container, style='Card.TFrame', relief="solid", borderwidth=1)
 lang_card.pack(fill="x", pady=(0, 15), ipady=15, ipadx=15)
 
 lang_frame = ttk.Frame(lang_card, style='Card.TFrame')
 lang_frame.pack(fill="x", padx=10, pady=5)
 
+# Limbă sursă
 source_frame = ttk.Frame(lang_frame, style='Card.TFrame')
 source_frame.pack(side="left", expand=True, fill="x", padx=5)
 
 ttk.Label(source_frame, text="Din:", font=("Segoe UI", 10, "bold"), background="white").pack(anchor="w", pady=(0, 5))
 source_var = tk.StringVar(value='Detectare Automată')
-# Crează lista cu "Detectare Automată" pe primul loc
 source_languages = ['Detectare Automată'] + sorted([k for k in LANGUAGES.keys() if k != 'Detectare Automată'])
 source_combo = ttk.Combobox(source_frame, textvariable=source_var,
                             values=source_languages,
                             state="readonly", width=25, font=("Segoe UI", 10))
 source_combo.pack(fill="x")
 
+# Buton swap
 swap_button = ttk.Button(lang_frame, text="⇄", command=swap_languages, width=3)
 swap_button.pack(side="left", padx=10, pady=15)
 
+# Limbă destinație
 target_frame = ttk.Frame(lang_frame, style='Card.TFrame')
 target_frame.pack(side="left", expand=True, fill="x", padx=5)
 
@@ -276,10 +383,17 @@ target_combo = ttk.Combobox(target_frame, textvariable=target_var,
                             state="readonly", width=25, font=("Segoe UI", 10))
 target_combo.pack(fill="x")
 
+# Label pentru limba detectată
 detected_label = ttk.Label(main_container, text="", font=("Segoe UI", 9),
                            foreground="#3498db", background="#f5f6fa")
-detected_label.pack(pady=(0, 10))
+detected_label.pack(pady=(0, 5))
 
+# Label pentru status PDF
+pdf_status_label = ttk.Label(main_container, text="", font=("Segoe UI", 9),
+                             foreground="#27ae60", background="#f5f6fa")
+pdf_status_label.pack(pady=(0, 10))
+
+# Side by side pentru text
 side_by_side = ttk.Frame(main_container, style='Modern.TFrame')
 side_by_side.pack(fill="both", expand=True, pady=(0, 10))
 
@@ -287,6 +401,7 @@ side_by_side.columnconfigure(0, weight=1)
 side_by_side.columnconfigure(1, weight=1)
 side_by_side.rowconfigure(0, weight=1)
 
+# Card input
 input_card = ttk.Frame(side_by_side, style='Card.TFrame', relief="solid", borderwidth=1)
 input_card.grid(row=0, column=0, sticky="nsew", padx=(0, 7), pady=0)
 
@@ -300,6 +415,7 @@ text_input.pack(fill="both", expand=True, padx=15, pady=(0, 10))
 text_input.bind("<KeyRelease>", adjust_heights)
 text_input.focus()
 
+# Card rezultat
 result_card = ttk.Frame(side_by_side, style='Card.TFrame', relief="solid", borderwidth=1)
 result_card.grid(row=0, column=1, sticky="nsew", padx=(7, 0), pady=0)
 
@@ -311,15 +427,36 @@ result_text = tk.Text(result_card, height=1, font=("Segoe UI", 11), wrap=tk.WORD
                       padx=10, pady=10, state="disabled")
 result_text.pack(fill="both", expand=True, padx=15, pady=(0, 10))
 
+# Frame pentru butoane
 button_frame = ttk.Frame(main_container, style='Modern.TFrame')
 button_frame.pack(pady=10)
 
-clear_button = ttk.Button(button_frame, text="🗑️ Șterge", command=clear_all, style='Modern.TButton')
+# Butoane cu design modern
+pdf_button = tk.Button(button_frame, text="📄 Încarcă PDF", command=load_pdf,
+                       font=("Segoe UI", 11, "bold"), bg="#00d2d3", fg="white",
+                       relief="flat", padx=20, pady=12, cursor="hand2",
+                       activebackground="#00a8a9")
+pdf_button.pack(side="left", padx=5)
+
+clear_button = tk.Button(button_frame, text="🗑️ Șterge", command=clear_all,
+                         font=("Segoe UI", 11, "bold"), bg="#ff6b6b", fg="white",
+                         relief="flat", padx=20, pady=12, cursor="hand2",
+                         activebackground="#ee5a52")
 clear_button.pack(side="left", padx=5)
 
-translate_button = ttk.Button(button_frame, text="🔄 Tradu", command=translate_text, style='Accent.TButton')
+translate_button = tk.Button(button_frame, text="🔄 Tradu", command=translate_text,
+                             font=("Segoe UI", 11, "bold"), bg="#5f27cd", fg="white",
+                             relief="flat", padx=20, pady=12, cursor="hand2",
+                             activebackground="#341f97")
 translate_button.pack(side="left", padx=5)
 
+download_button = tk.Button(button_frame, text="💾 Descarcă PDF", command=download_pdf,
+                            font=("Segoe UI", 11, "bold"), bg="#00d2d3", fg="white",
+                            relief="flat", padx=20, pady=12, cursor="hand2",
+                            activebackground="#00a8a9", state="disabled")
+download_button.pack(side="left", padx=5)
+
+# Bind Ctrl+Enter pentru traducere rapidă
 text_input.bind("<Control-Return>", translate_text)
 
 adjust_heights()
