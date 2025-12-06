@@ -183,6 +183,29 @@ def load_pdf():
         else:
             pdf_status_label.config(text="❌ Eroare la încărcarea PDF-ului")
 
+def resume_pdf():
+    """Generează un rezumat al PDF-ului încărcat"""
+    global current_pdf_path
+    if not current_pdf_path:
+        messagebox.showwarning("Atenție", "Nu există PDF încărcat pentru rezumat!")
+        return
+
+    text = extract_text_from_pdf(current_pdf_path)
+    if not text:
+        return
+
+    try:
+        # Folosește Google Translate pentru a genera un rezumat
+        summary = GoogleTranslator(source='auto', target='en').translate(text)
+        result_text.config(state="normal")
+        result_text.delete("1.0", tk.END)
+        result_text.insert("1.0", summary)
+        result_text.config(state="disabled")
+        adjust_heights()
+        # Activează butonul de download după generarea rezumatului
+        download_button.config(state="normal")
+    except Exception as e:
+        messagebox.showerror("Eroare Rezumat", f"Nu s-a putut genera rezumatul:\n{str(e)}")
 
 def create_pdf(text, output_path):
     """Creează un PDF cu textul tradus"""
@@ -398,8 +421,18 @@ side_by_side.rowconfigure(0, weight=1)
 input_card = ttk.Frame(side_by_side, style='Card.TFrame', relief="solid", borderwidth=1)
 input_card.grid(row=0, column=0, sticky="nsew", padx=(0, 7), pady=0)
 
-ttk.Label(input_card, text="📝 Text de tradus:", font=("Segoe UI", 10, "bold"),
-          background="white").pack(anchor="w", padx=15, pady=(10, 5))
+# Frame pentru header cu titlu și buton șterge
+input_header = ttk.Frame(input_card, style='Card.TFrame')
+input_header.pack(fill="x", padx=15, pady=(10, 5))
+
+ttk.Label(input_header, text="📝 Text de tradus:", font=("Segoe UI", 10, "bold"),
+          background="white").pack(side="left", anchor="w")
+
+clear_button = tk.Button(input_header, text="✕", command=clear_all,
+                         font=("Segoe UI", 12, "bold"), bg="#ff6b6b", fg="white",
+                         relief="flat", padx=8, pady=2, cursor="hand2",
+                         activebackground="#ee5a52", width=2, height=1)
+clear_button.pack(side="right", padx=(10, 0))
 
 # Frame pentru text input cu scrollbar
 input_text_frame = ttk.Frame(input_card, style='Card.TFrame')
@@ -448,11 +481,11 @@ pdf_button = tk.Button(button_frame, text="📄 Încarcă PDF", command=load_pdf
                        activebackground="#00a8a9")
 pdf_button.pack(side="left", padx=5)
 
-clear_button = tk.Button(button_frame, text="🗑️ Șterge", command=clear_all,
-                         font=("Segoe UI", 11, "bold"), bg="#ff6b6b", fg="white",
-                         relief="flat", padx=20, pady=12, cursor="hand2",
-                         activebackground="#ee5a52")
-clear_button.pack(side="left", padx=5)
+resume_button = tk.Button(button_frame, text="📄 Rezumat", command=resume_pdf,
+                       font=("Segoe UI", 11, "bold"), bg="#5f27cd", fg="white",
+                       relief="flat", padx=20, pady=12, cursor="hand2",
+                       activebackground="#00a8a9")
+resume_button.pack(side="left", padx=5)
 
 translate_button = tk.Button(button_frame, text="🔄 Tradu", command=translate_text,
                              font=("Segoe UI", 11, "bold"), bg="#5f27cd", fg="white",
