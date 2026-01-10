@@ -1,4 +1,5 @@
-Nume proiect:
+***Nume proiect:****
+
 Traducator Multilingual cu Sistem de Login
 
 Scopul proiectului:
