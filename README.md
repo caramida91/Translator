@@ -36,4 +36,4 @@ pip install PyPDF2
 * 2. Dupa autentificare se deschide traducatorul complet (afisare.py)
 * 3. Introdu text, selecteaza limbi, traduce, incarca PDF sau salveaza PDF
 
-*** TREBUIE MARITA FEREASTRA PENTRU A SE VEDEA TOATE BUTOANELE.
+### TREBUIE MARITA FEREASTRA PENTRU A SE VEDEA TOATE BUTOANELE.
