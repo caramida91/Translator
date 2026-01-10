@@ -13,20 +13,20 @@ Module si API-uri folosite:
 * FPDF (generare PDF)
 
 ## Modul de instalare:
-* 1.Trebuie clonat repositoriul cu comanda:
+* 1. Trebuie clonat repositoriul cu comanda:
 ```git clone https://github.com/caramida91/Translator.git```
-* 2.Instaleaza dependency-urile cu:
+* 2. Instaleaza dependency-urile cu:
 ```pip install requirements.txt```
-* 3.Pentru a rula aplicatia, se foloseste:
+* 3. Pentru a rula aplicatia, se foloseste:
 ```python app.py```
+** Sau pe rand:
+```
 pip install deep-translator
 pip install langdetect
 pip install bcrypt
 pip install fpdf
 pip install PyPDF2
-
-Sau toate odata:
-pip install deep-translator langdetect bcrypt fpdf PyPDF2
+```
 
 ## Cum se foloseste:
 * 1. Creeaza cont sau autentifica-te in fereastra de Login/Register
