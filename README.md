@@ -1,18 +1,24 @@
-### Traducator Multilingual cu Sistem de Login
+# Traducator Multilingual cu Sistem de Login
 
-Scopul proiectului:
-Aplicatie Python care permite traducerea textelor, detectarea limbii, incarcarea si salvarea PDF-urilor, si acces securizat prin sistem de Login/Register.
+
+## Aplicatie Python care permite traducerea textelor, detectarea limbii, incarcarea si salvarea PDF-urilor, si acces securizat prin sistem de Login/Register.
 
 Module si API-uri folosite:
-- Tkinter (interfata grafica)
-- deep-translator (Google Translate API)
-- langdetect (detectarea limbii)
-- bcrypt (criptare parole)
-- SQLite3 (baza de date pentru utilizatori)
-- PyPDF2 (citire PDF)
-- FPDF (generare PDF)
+* Tkinter (interfata grafica)
+* deep-translator (Google Translate API)
+* langdetect (detectarea limbii)
+* bcrypt (criptare parole)
+* SQLite3 (baza de date pentru utilizatori)
+* PyPDF2 (citire PDF)
+* FPDF (generare PDF)
 
-Instalare dependente necesare:
+## Modul de instalare:
+* 1.Trebuie clonat repositoriul cu comanda:
+```git clone https://github.com/caramida91/Translator.git```
+* 2.Instaleaza dependency-urile cu:
+```pip install requirements.txt```
+* 3.Pentru a rula aplicatia, se foloseste:
+```python app.py```
 pip install deep-translator
 pip install langdetect
 pip install bcrypt
@@ -22,8 +28,7 @@ pip install PyPDF2
 Sau toate odata:
 pip install deep-translator langdetect bcrypt fpdf PyPDF2
 
-Cum se foloseste:
-1. Ruleaza fisierul app.py
-2. Creeaza cont sau autentifica-te in fereastra de Login/Register
-3. Dupa autentificare se deschide traducatorul complet (afisare.py)
-4. Introdu text, selecteaza limbi, traduce, incarca PDF sau salveaza PDF
+## Cum se foloseste:
+* 1. Creeaza cont sau autentifica-te in fereastra de Login/Register
+* 2. Dupa autentificare se deschide traducatorul complet (afisare.py)
+* 3. Introdu text, selecteaza limbi, traduce, incarca PDF sau salveaza PDF
