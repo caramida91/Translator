@@ -14,11 +14,17 @@ Module si API-uri folosite:
 
 ## Modul de instalare:
 * 1. Trebuie clonat repositoriul cu comanda:
+
 ```git clone https://github.com/caramida91/Translator.git```
+
 * 2. Instaleaza dependency-urile cu:
+     
 ```pip install requirements.txt```
+
 * 3. Pentru a rula aplicatia, se foloseste:
+     
 ```python app.py```
+
 ** Sau pe rand:
 ```
 pip install deep-translator
