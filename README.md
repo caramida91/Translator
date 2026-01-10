@@ -1,6 +1,4 @@
-***Nume proiect:****
-
-Traducator Multilingual cu Sistem de Login
+### Traducator Multilingual cu Sistem de Login
 
 Scopul proiectului:
 Aplicatie Python care permite traducerea textelor, detectarea limbii, incarcarea si salvarea PDF-urilor, si acces securizat prin sistem de Login/Register.
