@@ -1,6 +1,6 @@
 import tkinter as tk
-from database import DatabaseManager
-from login_window import LoginWindow
+from DataBase.database import DatabaseManager
+from Interface.login_window import LoginWindow
 
 def main():
     root = tk.Tk()

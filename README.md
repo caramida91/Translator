@@ -17,7 +17,7 @@ Module si API-uri folosite:
 ```git clone https://github.com/caramida91/Translator.git```
 
 * 2. Instaleaza dependency-urile cu:
-```pip install requirements.txt```
+```pip install -r requirements.txt```
 
 * 3. Pentru a rula aplicatia, se foloseste:
 ```python app.py```
@@ -35,3 +35,5 @@ pip install PyPDF2
 * 1. Creeaza cont sau autentifica-te in fereastra de Login/Register
 * 2. Dupa autentificare se deschide traducatorul complet (afisare.py)
 * 3. Introdu text, selecteaza limbi, traduce, incarca PDF sau salveaza PDF
+
+*** TREBUIE MARITA FEREASTRA PENTRU A SE VEDEA TOATE BUTOANELE.
