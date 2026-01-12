@@ -131,7 +131,7 @@ def enable_searchable_combobox(combobox, values):
     values = sorted(values)
 
     def on_keyrelease(event):
-        # ignoră tastele de navigare
+        
         if event.keysym in ("Up", "Down", "Return", "Escape", "Tab"):
             return
 
@@ -146,7 +146,7 @@ def enable_searchable_combobox(combobox, values):
             ]
 
     def on_down(event):
-        # utilizatorul deschide explicit dropdown-ul
+       
         combobox.event_generate("<Button-1>")
         return "break"
 
@@ -155,10 +155,10 @@ def enable_searchable_combobox(combobox, values):
 
 
 
-# Dicționar invers pentru conversie cod -> nume
+# Dictionar invers pentru conversie cod -> nume
 CODE_TO_NAME = {v: k for k, v in LANGUAGES.items()}
 
-# Variabile globale
+
 current_pdf_path = None
 is_recording = False
 recognizer = sr.Recognizer()
@@ -229,15 +229,15 @@ def start_recording():
         return
 
     is_recording = True
-    mic_button.config(bg="#e74c3c", text="⏺")  # Roșu și icon de înregistrare
-    stop_button.pack(side="right", padx=(5, 10))  # Afișează butonul stop
+    mic_button.config(bg="#e74c3c", text="⏺")  # iconita record
+    stop_button.pack(side="right", padx=(5, 10))  # butonul stop
     pdf_status_label.config(text="🎤 Ascult... Vorbește acum!", foreground="#e74c3c")
 
     def record():
         global is_recording
         try:
             with sr.Microphone() as source:
-                # Ajustează pentru zgomot ambiental
+                
                 recognizer.adjust_for_ambient_noise(source, duration=0.5)
 
                 # Ascultă până când se apasă stop
@@ -248,10 +248,10 @@ def start_recording():
 
                 pdf_status_label.config(text="🔄 Procesez vocea...", foreground="#3498db")
 
-                # Recunoaște textul
+            
                 text = recognizer.recognize_google(audio, language="ro-RO")
 
-                # Adaugă textul în câmpul de input
+                # textul detectat -> input
                 current_text = text_input.get("1.0", tk.END).strip()
                 if current_text:
                     text_input.insert(tk.END, " " + text)
@@ -271,7 +271,7 @@ def start_recording():
         finally:
             stop_recording()
 
-    # Pornește înregistrarea într-un thread separat
+    # inregistrarea se face intr un alt thread
     thread = threading.Thread(target=record, daemon=True)
     thread.start()
 
@@ -280,7 +280,7 @@ def stop_recording():
     """Oprește înregistrarea vocii"""
     global is_recording
     is_recording = False
-    mic_button.config(bg="#00d2d3", text="🎤")  # Revine la culoarea originală
+    mic_button.config(bg="#00d2d3", text="🎤")  
     stop_button.pack_forget()  # Ascunde butonul stop
 
 
@@ -569,7 +569,7 @@ def clear_all():
     download_button.config(state="disabled")
 
 
-# Creare fereastră principală
+# Creare interfata principala
 root = tk.Tk()
 root.title("Traducător Multilingual")
 root.geometry("700x500")
@@ -637,7 +637,7 @@ target_combo = ttk.Combobox(
     target_frame,
     textvariable=target_var,
     values=target_languages,
-    state="normal",   # <-- IMPORTANT
+    state="normal",   
     width=25,
     font=("Segoe UI", 10)
 )
