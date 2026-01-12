@@ -11,7 +11,8 @@ Module si API-uri folosite:
 * SQLite3 (baza de date pentru utilizatori)
 * PyPDF2 (citire PDF)
 * FPDF (generare PDF)
-
+* PyAudio (microfon)
+* SpeechRecognition( recunoastere vorbe)
 ## Modul de instalare:
 * 1. Trebuie clonat repositoriul cu comanda:
 ```git clone https://github.com/caramida91/Translator.git```
