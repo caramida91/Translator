@@ -16,11 +16,14 @@ Module si API-uri folosite:
 * 1. Trebuie clonat repositoriul cu comanda:
 ```git clone https://github.com/caramida91/Translator.git```
 
-* 2. Instaleaza dependency-urile cu:
+* 2. Creeaza un virtual env pe Linux cu:
+```python -m venv venv ```
+```source venv/bin/activate```
+* Iar pe Windows cu:
+```py -m venv venv```
+```venv/Scripts/activate```
+* 3. Instaleaza dependency-urile cu:
 ```pip install -r requirements.txt```
-
-* 3. Pentru a rula aplicatia, se foloseste:
-```python app.py```
 
 * Sau pe rand:
 ```
@@ -29,7 +32,11 @@ pip install langdetect
 pip install bcrypt
 pip install fpdf
 pip install PyPDF2
+pip install pyaudio
+pip install speechrecognition
 ```
+* 4. Pentru a rula aplicatia, se foloseste:
+```python app.py```
 
 ## Cum se foloseste:
 * 1. Creeaza cont sau autentifica-te in fereastra de Login/Register
