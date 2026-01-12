@@ -21,7 +21,8 @@ Module si API-uri folosite:
 ```python -m venv venv ```
 ```source venv/bin/activate```
 * Iar pe Windows cu:
-```py -m venv venv```
+```py -m venv venv``` sau ```python -m venv venv```
+
 ```venv/Scripts/activate```
 * 3. Instaleaza dependency-urile cu:
 ```pip install -r requirements.txt```
