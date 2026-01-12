@@ -1,3 +1,4 @@
+audioop-lts==0.2.2
 bcrypt==5.0.0
 beautifulsoup4==4.14.3
 certifi==2026.1.4
@@ -6,9 +7,13 @@ deep-translator==1.11.4
 fpdf==1.7.2
 idna==3.11
 langdetect==1.0.9
+PyAudio==0.2.14
 PyPDF2==3.0.1
 requests==2.32.5
 six==1.17.0
 soupsieve==2.8.1
+SpeechRecognition==3.14.5
+standard-aifc==3.13.0
+standard-chunk==3.13.0
 typing_extensions==4.15.0
 urllib3==2.6.3
